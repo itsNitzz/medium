@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
+import { createPostInput, updatePostInput } from "iamnitzz-common-module";
 
 const blogsRoute = new Hono<{ Variables: { userId: string }; Bindings: { DATABASE_URL: string } }>();
 
@@ -11,6 +12,15 @@ blogsRoute.post("/", async (c) => {
   }).$extends(withAccelerate());
 
   const body = await c.req.json();
+  const { success } = createPostInput.safeParse(body);
+  if (!success) {
+    return c.json(
+      { message: "Incorrect user input" },
+      {
+        status: 400,
+      }
+    );
+  }
   const post = await prisma.post.create({
     data: { ...body, authorId: userId, published: true },
   });
@@ -25,6 +35,15 @@ blogsRoute.put("/", async (c) => {
   }).$extends(withAccelerate());
 
   const body = await c.req.json();
+  const { success } = updatePostInput.safeParse(body);
+  if (!success) {
+    return c.json(
+      { message: "Incorrect user input" },
+      {
+        status: 400,
+      }
+    );
+  }
   await prisma.post.update({
     data: { title: body.title, content: body.content },
     where: {
