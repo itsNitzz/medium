@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import AuthForm from "./AuthForm";
 
 export default function Auth({ authType }: { authType: "Signin" | "Signup" }) {
@@ -9,11 +10,17 @@ export default function Auth({ authType }: { authType: "Signin" | "Signup" }) {
         <h1 className="text-3xl font-bold text-center">{heading}</h1>
         {authType === "Signup" ? (
           <p className="text-center text-gray-500 mt-1">
-            Already have an account? <a className="underline">Login</a>
+            Already have an account?{" "}
+            <Link to="/signin" className="underline">
+              Login
+            </Link>
           </p>
         ) : (
           <p className="text-center text-gray-500 mt-1">
-            Don't have an account? <a className="underline">Signup</a>
+            Don't have an account?{" "}
+            <Link to="/signup" className="underline">
+              Signup
+            </Link>
           </p>
         )}
         <AuthForm auth={authType === "Signin" ? authType : authType} />

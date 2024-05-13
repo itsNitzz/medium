@@ -13,7 +13,9 @@ export default function Header() {
           <button className="text-white text-sm tracking-[1px] rounded-full py-[3px] px-3 bg-green-400">Publish</button>
           <span className="mb-2 font-bold">...</span>
           <NotificationBell />
-          <span className="inline-block  w-7 h-7 text-white bg-green-900 text-center rounded-full ">h</span>
+          <span className="w-7 h-7 text-white bg-green-900 text-center rounded-full flex justify-center items-center ">
+            <span>N</span>
+          </span>
         </div>
       </nav>
     </header>

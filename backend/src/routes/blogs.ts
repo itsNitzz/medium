@@ -61,12 +61,26 @@ blogsRoute.get("/bulk", async (c) => {
   }).$extends(withAccelerate());
 
   try {
-    const posts = await prisma.post.findMany();
+    const posts = await prisma.post.findMany({
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        author: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
     console.log("posts", posts);
 
     return c.json(posts);
   } catch (e) {
-    console.log(e);
+    c.status(400);
+    c.json({
+      msg: "user not logged in",
+    });
   }
 });
 

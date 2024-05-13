@@ -1,19 +1,49 @@
 import { FormEvent, useState } from "react";
 import { SignupType } from "iamnitzz-common-module";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AuthForm = ({ auth }: { auth: string }) => {
+  const navigate = useNavigate();
+
   const [userCredentials, getUserCredentials] = useState<SignupType>({
     name: "",
     email: "",
     password: "",
   });
 
-  const onUserCredentialsSubmit = (e: FormEvent) => {
+  const [error, setError] = useState<null | string>(null);
+  console.log(error);
+
+  // on auth form submit
+  const onUserCredentialsSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    const isSuccess = userCredentials.email && userCredentials.password;
+
+    if (!isSuccess) return setError("Incorrect credentials!");
+
+    const userData =
+      auth === "Signup" ? userCredentials : { email: userCredentials.email, password: userCredentials.password };
+
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8787/api/v1/user/${auth === "Signup" ? "signup" : "signin"}`,
+        userData
+      );
+
+      sessionStorage.setItem("token", response.data.token);
+
+      setError(null);
+
+      navigate("/blogs");
+    } catch ({ response }) {
+      setError(response.data.message);
+    }
   };
 
   return (
     <form className="w-[20rem] mt-3" onSubmit={onUserCredentialsSubmit}>
+      {error && <p className="text-red-400 font-medium">{error}</p>}
       {auth === "Signup" ? (
         <div className="flex flex-col gap-1 mb-3">
           <label className="font-medium" htmlFor="username">
@@ -72,7 +102,9 @@ const AuthForm = ({ auth }: { auth: string }) => {
           }}
         />
       </div>
-      <button className="bg-slate-900 text-white text-center w-full p-1 rounded-md mt-1">{auth}</button>
+      <button className="bg-slate-900 text-white text-center w-full p-1 rounded-md mt-1 active:brightness-[80%]">
+        {auth}
+      </button>
     </form>
   );
 };
